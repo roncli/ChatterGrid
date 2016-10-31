@@ -1,0 +1,46 @@
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+#grid {
+    flex: 1 100%;
+    background-color: grey;
+}
+
+#drop {
+    flex: 1 100px;
+    font-size: 50pt;
+    text-align: center;
+    background-color: green;
+}
+
+#bar {
+    flex: 1 50px;
+    background-color: grey;
+}
+
+#sounds {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-right: 5px;
+}
+
+.sound {
+    width: 25%;
+    padding: 5px 0 0 5px;
+}
+
+.sound div {
+    background-color: yellow;
+}

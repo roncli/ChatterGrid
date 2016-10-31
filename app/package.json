@@ -1,0 +1,11 @@
+{
+    "name": "ChatterGrid",
+    "productName": "ChatterGrid",
+    "author":{
+        "name": "Ronald M. Clifford",
+        "email": "roncli@roncli.com",
+        "url": "http://www.roncli.com"
+    },
+    "version": "0.1.0",
+    "description": "An application to easily create and share custom soundboards."
+}
