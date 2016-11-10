@@ -1,11 +1,21 @@
 {
-    "name": "ChatterGrid",
+    "name": "chattergrid",
     "productName": "ChatterGrid",
     "author":{
         "name": "Ronald M. Clifford",
         "email": "roncli@roncli.com",
         "url": "http://www.roncli.com"
     },
+    "dependencies": {
+        "angular": "1.5.8",
+        "bootstrap": "3.3.7",
+        "jquery": "3.1.1"
+    },
     "version": "0.1.0",
-    "description": "An application to easily create and share custom soundboards."
+    "description": "An application to easily create and share custom soundboards.",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/roncli/ChatterGrid"
+    },
+    "license": "MIT"
 }

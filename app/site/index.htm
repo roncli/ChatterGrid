@@ -1,20 +1,28 @@
-<html>
+<html ng-app="chattergrid" ng-controller="chattergrid">
     <head>
+        <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="index.css" />
         <script src="index.js"></script>
     </head>
-    <body onload="onLoad();">
+    <body>
         <div id="grid">
-            <div id="sounds">
-                <div class="sound"><div>Test</div></div>
-                <div class="sound"><div>Test</div></div>
-                <div class="sound"><div>Test</div></div>
-                <div class="sound"><div>Test</div></div>
-                <div class="sound"><div>Test</div></div>
+            <div class="container-fluid">
+                <div id="sounds" class="row">
+                    <div ng-repeat="sound in sounds" class="sound col-xs-3">
+                        <div class="panel panel-defualt">
+                            <div class="panel-body">
+                                <div class="pull-left">{{sound.name}}</div>
+                                <div class="pull-right">
+                                    <button class="btn btn-primary" ng-click="play(sound)"><span class="glyphicon glyphicon-play"></span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div id="drop">
-            Drop audio file here to add to the grid!
+            Drop audio files here to add to the grid!
         </div>
         <div id="bar">
         </div>
