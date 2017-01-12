@@ -2,6 +2,9 @@
     <head>
         <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="index.css" />
+        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+        <script>window.$ = window.jQuery = require("jquery");</script>
+        <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="index.js"></script>
     </head>
     <body>
@@ -11,9 +14,14 @@
                     <div ng-repeat="sound in sounds" class="sound col-xs-3">
                         <div class="panel panel-defualt">
                             <div class="panel-body">
-                                <div class="pull-left">{{sound.name}}</div>
+                                <div class="pull-left">
+                                    <button class="btn btn-danger" ng-click="delete(sound)" title="Delete sound from ChatterGrid"><span class="glyphicon glyphicon-remove"></span></button>
+                                    {{sound.name}}
+                                </div>
                                 <div class="pull-right">
-                                    <button class="btn btn-primary" ng-click="play(sound)"><span class="glyphicon glyphicon-play"></span></button>
+                                    <button class="btn btn-primary" ng-if="sound.audio.paused" ng-click="play(sound)" title="Play sound"><span class="glyphicon glyphicon-play"></span></button>
+                                    <button class="btn btn-primary" ng-if="!sound.audio.paused" ng-click="pause(sound)" title="Pause sound"><span class="glyphicon glyphicon-pause"></span></button>
+                                    <button class="btn btn-primary" ng-if="!sound.audio.paused" ng-click="stop(sound)" title="Stop sound"><span class="glyphicon glyphicon-stop"></span></button>
                                 </div>
                             </div>
                         </div>
@@ -25,6 +33,9 @@
             Drop audio files here to add to the grid!
         </div>
         <div id="bar">
+            <button class="btn btn-default" ng-click="loadGrid()">Load Grid</button>
+            <button class="btn btn-default" ng-click="saveGrid()">Save Grid</button>
+            <button class="btn btn-default" ng-click="shareGrid()">Share Grid</button>
         </div>
     </body>
 </html>
