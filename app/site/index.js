@@ -29,6 +29,16 @@ app.controller("chattergrid", ["$scope", function($scope) {
         sound.audio.currentTime = 0;
     };
 
+    $scope.edit = (sound) => {
+        sound.edit = !sound.edit;
+        sound.nameEdit = sound.name;
+    };
+
+    $scope.changeName = (sound) => {
+        sound.edit = false;
+        sound.name = sound.nameEdit;
+    };
+
     $scope.delete = (sound) => {
         // TODO: Check for memory leak if we don't dispose of the Audio properly.
         delete files[sound.file];
@@ -89,7 +99,12 @@ app.controller("chattergrid", ["$scope", function($scope) {
 
                                     promises = sounds.map((sound) => new Promise((resolve, reject) => {
                                         zip.file(sound.index.toString()).async("nodebuffer").then((data) => {
-                                            checkFile({file: sound.file, data: data.toString("base64"), type: sound.type}, true);
+                                            checkFile({
+                                                file: sound.file,
+                                                data: data.toString("base64"),
+                                                type: sound.type,
+                                                name: sound.name
+                                            }, true);
                                             resolve();
                                         }).catch(reject);
                                     }));
@@ -113,7 +128,11 @@ app.controller("chattergrid", ["$scope", function($scope) {
                             $scope.sounds = [];
                             
                             sounds.forEach((sound) => {
-                                checkFile({file: sound.file, type: sound.type}, true);
+                                checkFile({
+                                    file: sound.file,
+                                    type: sound.type,
+                                    name: sound.name
+                                }, true);
                             });
                             dirty = false;
                         } catch (err) {
@@ -158,7 +177,8 @@ app.controller("chattergrid", ["$scope", function($scope) {
 
                     return {
                         file: sound.file,
-                        type: sound.type
+                        type: sound.type,
+                        name: sound.name
                     };
                 })), (err) => {
                     if (err) {
@@ -190,8 +210,9 @@ app.controller("chattergrid", ["$scope", function($scope) {
 
             zip.file("json", JSON.stringify($scope.sounds.map((sound, index) => {
                 return {
-                    file: "/" + sound.name + "." + sound.extension,
+                    file: "/" + (sound.extension ? sound.filename + "." + sound.extension : sound.filename),
                     type: sound.type,
+                    name: sound.name,
                     index: index
                 };
             })));
@@ -240,7 +261,7 @@ app.controller("chattergrid", ["$scope", function($scope) {
 }]);
 
 $(document).ready(() => {
-    $(window).on("dragover", (ev) => {
+    $(window).on("dragenter dragleave dragover dragdrop", (ev) => {
         ev.preventDefault();
         return false;
     });
@@ -248,13 +269,12 @@ $(document).ready(() => {
     $(window).on("drop", (ev) => {
         var files;
 
-        if (ev.target.id === "drop") {
-            [].concat.apply([], ev.originalEvent.dataTransfer.files).forEach((file) => {
-                checkFile({file: file.path, type: file.type});
-            });
-        }
-
         ev.preventDefault();
+
+        [].concat.apply([], ev.originalEvent.dataTransfer.files).forEach((file) => {
+            checkFile({file: file.path, type: file.type});
+        });
+
         return false;
     });
 
@@ -288,7 +308,8 @@ checkFile = (opts, fromLoad) => {
         scope.sounds.push({
             file: file,
             data: data,
-            name: parsed[1],
+            filename: parsed[1],
+            name: opts.name || parsed[1],
             extension: parsed[2],
             type: type,
             audio: audio

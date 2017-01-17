@@ -1,5 +1,6 @@
 <html ng-app="chattergrid" ng-controller="chattergrid">
     <head>
+        <title>ChatterGrid</title>
         <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="index.css" />
         <script src="../node_modules/jquery/dist/jquery.min.js"></script>
@@ -7,21 +8,46 @@
         <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="index.js"></script>
     </head>
-    <body>
-        <div id="grid">
-            <div class="container-fluid">
-                <div id="sounds" class="row">
-                    <div ng-repeat="sound in sounds" class="sound col-xs-3">
-                        <div class="panel panel-defualt">
-                            <div class="panel-body">
+    <body class="bg-primary">
+        <div class="text-center background">
+            ChatterGrid
+        </div>
+        <div class="container row center-block">
+            <div class="col-xs-12">
+                <nav class="navbar navbar-inverse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#" ng-click="loadGrid()"><b>Load Grid</b></a></li>
+                        <li><a href="#" ng-click="saveGrid()"><b>Save Grid</b></a></li>
+                        <li><a href="#" ng-click="shareGrid()"><b>Share Grid</b></a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        <div ng-if="sounds" class="container-fluid">
+            <div id="sounds" class="row">
+                <div ng-repeat="sound in sounds" class="sound col-sm-4 col-md-3 col-lg-2">
+                    <div class="panel panel-defualt">
+                        <div class="panel-body sound-panel">
+                            <button class="btn btn-xs btn-danger close-button" ng-click="delete(sound)" title="Delete sound from ChatterGrid"><span class="glyphicon glyphicon-remove"></span></button>
+                            <div class="sound-name" ng-if="sound.edit">
+                                <div class="input-group">
+                                    <textarea class="form-control" rows="3" placeholder="Sound name" style="resize: none;" ng-model="sound.nameEdit"></textarea>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary sound-name-change" type="button" ng-click="changeName(sound)" title="Change sound name"><span class="glyphicon glyphicon-ok"></span></button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="sound-name" ng-if="!sound.edit">
+                                {{sound.name}}
+                            </div>
+                            <div>
                                 <div class="pull-left">
-                                    <button class="btn btn-danger" ng-click="delete(sound)" title="Delete sound from ChatterGrid"><span class="glyphicon glyphicon-remove"></span></button>
-                                    {{sound.name}}
+                                    <button ng-class="{btn: true, 'btn-sm': true, 'btn-primary': !sound.edit, 'btn-danger': sound.edit}" ng-click="edit(sound)" title="Edit name"><span class="glyphicon glyphicon-pencil"></span></button>
                                 </div>
                                 <div class="pull-right">
-                                    <button class="btn btn-primary" ng-if="sound.audio.paused" ng-click="play(sound)" title="Play sound"><span class="glyphicon glyphicon-play"></span></button>
-                                    <button class="btn btn-primary" ng-if="!sound.audio.paused" ng-click="pause(sound)" title="Pause sound"><span class="glyphicon glyphicon-pause"></span></button>
-                                    <button class="btn btn-primary" ng-if="!sound.audio.paused" ng-click="stop(sound)" title="Stop sound"><span class="glyphicon glyphicon-stop"></span></button>
+                                    <button class="btn btn-sm btn-primary" ng-if="sound.audio.paused" ng-click="play(sound)" title="Play sound"><span class="glyphicon glyphicon-play"></span></button>
+                                    <button class="btn btn-sm btn-primary" ng-if="!sound.audio.paused" ng-click="pause(sound)" title="Pause sound"><span class="glyphicon glyphicon-pause"></span></button>
+                                    <button class="btn btn-sm btn-primary" ng-if="!sound.audio.paused" ng-click="stop(sound)" title="Stop sound"><span class="glyphicon glyphicon-stop"></span></button>
                                 </div>
                             </div>
                         </div>
@@ -29,13 +55,14 @@
                 </div>
             </div>
         </div>
-        <div id="drop">
-            Drop audio files here to add to the grid!
-        </div>
-        <div id="bar">
-            <button class="btn btn-default" ng-click="loadGrid()">Load Grid</button>
-            <button class="btn btn-default" ng-click="saveGrid()">Save Grid</button>
-            <button class="btn btn-default" ng-click="shareGrid()">Share Grid</button>
+        <div ng-if="sounds.length === 0">
+            <div class="container row center-block">
+                <div class="col-xs-12">
+                    <div class="text-center drop jumbotron">
+                        Drag audio files here to add them to the grid!
+                    </div>
+                </div>
+            </div>
         </div>
     </body>
 </html>
