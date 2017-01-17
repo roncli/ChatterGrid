@@ -2,7 +2,7 @@ const {app, BrowserWindow} = require("electron");
 
 var win,
     createWindow = () => {
-        win = new BrowserWindow({show: false, width: 800, height: 600, minWidth: 800, minHeight: 600});
+        win = new BrowserWindow({show: false, width: 800, height: 600, minWidth: 800, minHeight: 600, icon: __dirname + "/../logo/logo.ico"});
         win.loadURL("file://" + __dirname + "/site/index.htm");
         win.toggleDevTools();
         win.setMenu(null);
