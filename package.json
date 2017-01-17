@@ -6,7 +6,7 @@
         "email": "roncli@roncli.com",
         "url": "http://www.roncli.com"
     },
-    "version": "0.1.0",
+    "version": "1.0.0",
     "build": {
         "appId": "com.electron.chattergrid",
         "copyright": "©2016-2017 roncli Productions",
