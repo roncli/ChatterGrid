@@ -15,8 +15,8 @@
         "dist": "node_modules/.bin/build.cmd"
     },
     "devDependencies": {
-        "electron-builder": "7.15.2",
-        "electron-prebuilt": "1.4.4"
+        "electron-builder": "11.3.0",
+        "electron-prebuilt": "1.4.13"
     },
     "repository": {
         "type": "git",
