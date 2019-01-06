@@ -6,6 +6,7 @@ var win,
         win.loadURL("file://" + __dirname + "/site/index.htm");
         win.setMenu(null);
         win.maximize();
+        // win.toggleDevTools(); // Uncomment to debug.
 
         win.once("ready-to-show", () => {
             win.show();

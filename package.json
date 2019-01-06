@@ -1,15 +1,15 @@
 {
     "name": "ChatterGrid",
     "productName": "ChatterGrid",
-    "author":{
+    "author": {
         "name": "Ronald M. Clifford",
         "email": "roncli@roncli.com",
         "url": "http://www.roncli.com"
     },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "build": {
         "appId": "com.electron.chattergrid",
-        "copyright": "©2016-2017 roncli Productions",
+        "copyright": "©2016-2019 roncli Productions",
         "productName": "ChatterGrid",
         "compression": "maximum",
         "nsis": {
@@ -31,8 +31,8 @@
         "dist": "node_modules/.bin/build"
     },
     "devDependencies": {
-        "electron-builder": "11.3.0",
-        "electron-prebuilt": "1.4.13"
+        "electron": "4.0.1",
+        "electron-builder": "20.38.4"
     },
     "repository": {
         "type": "git",

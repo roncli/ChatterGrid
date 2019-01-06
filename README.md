@@ -14,5 +14,9 @@ To run:
 
 ## Releases
 
+### 1.0.1 - 1/5/2019
+* Dependency upgrades.
+* New design to support the upgrade to Bootstrap v4.
+
 ### 1.0 - 1/16/2017
-* Initial version
+* Initial version.

@@ -5,6 +5,7 @@ html, body {
 body {
     position: relative;
     color: #000000 !important;
+    line-height: 1.2;
 }
 
 .background {
@@ -21,12 +22,16 @@ body {
     padding-top: 20px;
 }
 
-.sound-panel {
+#sounds .card {
+    margin-bottom: 20px;
+}
+
+.sound-card {
     position: relative;
 }
 
 .sound-name {
-    padding: 15px 15px 0 15px;
+    padding: 20px 15px 5px 15px;
 }
 
 .sound-name .input-group {
@@ -50,6 +55,6 @@ body {
     font-size: 72px;
 }
 
-.panel-body {
+.card-body {
     padding: 2px;
 }
