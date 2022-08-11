@@ -6,7 +6,7 @@ const remote = require("@electron/remote"),
     fs = require("fs"),
     path = require("path"),
     JSZip = require("jszip"),
-    filenameRegex = /[/\\]([^/\\]+)\.([^/\\]+)$/,
+    filenameRegex = /[/\\](?<filename>[^/\\]+)\.(?<extension>[^/\\]+)$/,
     filterAllCg = {name: "All ChatterGrid files", extensions: ["chgd", "chgs"]},
     filterChgd = {name: "ChatterGrid grid definition", extensions: ["chgd"]},
     filterChgs = {name: "ChatterGrid sounds", extensions: ["chgs"]},
@@ -50,9 +50,9 @@ const checkFile = (opts, fromLoad) => {
         scope.sounds.push({
             file,
             data,
-            filename: parsed[1],
-            name: opts.name || parsed[1],
-            extension: parsed[2],
+            filename: parsed.groups.filename,
+            name: opts.name || parsed.groups.filename,
+            extension: parsed.groups.extension,
             type,
             audio
         });
