@@ -9,7 +9,7 @@
     "version": "1.0.1",
     "build": {
         "appId": "com.electron.chattergrid",
-        "copyright": "©2016-2019 roncli Productions",
+        "copyright": "©2016-2022 roncli Productions",
         "productName": "ChatterGrid",
         "compression": "maximum",
         "nsis": {
