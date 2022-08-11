@@ -4,9 +4,8 @@
         <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css" />
         <link rel="stylesheet" href="index.css" />
-        <script src="../node_modules/jquery/dist/jquery.min.js"></script>
         <script>window.$ = window.jQuery = require("jquery");</script>
-        <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script>window.angular = require("angular");</script>
         <script src="index.js"></script>
     </head>
     <body class="bg-primary">
@@ -44,10 +43,10 @@
                                 {{sound.name}}
                             </div>
                             <div>
-                                <div class="float-left">
+                                <div class="float-start">
                                     <button ng-class="{btn: true, 'btn-sm': true, 'btn-primary': !sound.edit, 'btn-danger': sound.edit}" ng-click="edit(sound)" title="Edit name"><span class="fas fa-pencil-alt"></span></button>
                                 </div>
-                                <div class="float-right">
+                                <div class="float-end">
                                     <button class="btn btn-sm btn-primary" ng-if="sound.audio.paused" ng-click="play(sound)" title="Play sound"><span class="fas fa-play"></span></button>
                                     <button class="btn btn-sm btn-primary" ng-if="!sound.audio.paused" ng-click="pause(sound)" title="Pause sound"><span class="fas fa-pause"></span></button>
                                     <button class="btn btn-sm btn-primary" ng-if="!sound.audio.paused" ng-click="stop(sound)" title="Stop sound"><span class="fas fa-stop"></span></button>
@@ -62,7 +61,7 @@
             <div class="container">
                 <div class="row center-block">
                     <div class="col">
-                        <div class="text-center drop jumbotron">
+                        <div class="text-center drop">
                             Drag audio files here to add them to the grid!
                         </div>
                     </div>

@@ -1,165 +1,218 @@
-var electron = require("electron"),
+/**
+ * @typedef {{file: string, type: string, data?: string, name?: string}} CheckFileOptions
+ */
+
+const remote = require("@electron/remote"),
     fs = require("fs"),
     path = require("path"),
     JSZip = require("jszip"),
-    files = {},
     filenameRegex = /[/\\]([^/\\]+)\.([^/\\]+)$/,
-    dirty = false,
     filterAllCg = {name: "All ChatterGrid files", extensions: ["chgd", "chgs"]},
     filterChgd = {name: "ChatterGrid grid definition", extensions: ["chgd"]},
     filterChgs = {name: "ChatterGrid sounds", extensions: ["chgs"]},
-    angular, app, scope;
+    angular = require("angular"),
+    app = angular.module("chattergrid", []);
 
-angular = require("angular"),
-app = angular.module("chattergrid", []),
+let dirty = false,
+    files = {},
+    scope;
 
-app.controller("chattergrid", ["$scope", function($scope) {
-    $scope.sounds = [];
+/**
+ * Checks a file.
+ * @param {CheckFileOptions} opts The options for the file.
+ * @param {boolean} [fromLoad] Defaults to false.  Whether this was called from loading.
+ * @returns {void}
+ */
+const checkFile = (opts, fromLoad) => {
+    let audio;
 
-    $scope.play = (sound) => {
-        sound.audio.play();
+    const file = opts.file,
+        type = opts.type,
+        data = opts.data;
+
+    if (files[file]) {
+        alert(`You've already added ${file}.`);
+        return;
+    }
+
+    audio = new Audio(data ? `data:${type};base64,${data}` : file);
+
+    audio.onerror = (/** @type {Event} */err) => {
+        alert(`${file} is not of a supported format.`);
+        err.cancelBubble = true;
+        audio = null;
     };
 
-    $scope.pause = (sound) => {
-        sound.audio.pause();
-    };
+    audio.onloadeddata = () => {
+        const parsed = filenameRegex.exec(file);
 
-    $scope.stop = (sound) => {
-        sound.audio.pause();
-        sound.audio.currentTime = 0;
-    };
+        files[file] = type;
+        scope.sounds.push({
+            file,
+            data,
+            filename: parsed[1],
+            name: opts.name || parsed[1],
+            extension: parsed[2],
+            type,
+            audio
+        });
 
-    $scope.edit = (sound) => {
-        sound.edit = !sound.edit;
-        sound.nameEdit = sound.name;
-    };
+        audio.addEventListener("pause", () => {
+            scope.$apply();
+        });
 
-    $scope.changeName = (sound) => {
-        sound.edit = false;
-        sound.name = sound.nameEdit;
-    };
+        if (!fromLoad) {
+            dirty = true;
+        }
 
-    $scope.delete = (sound) => {
-        // TODO: Check for memory leak if we don't dispose of the Audio properly.
-        delete files[sound.file];
-        $scope.sounds.splice($scope.sounds.indexOf(sound), 1);
-        dirty = true;
+        scope.$apply();
     };
+};
 
-    $scope.loadGrid = () => {
-        new Promise((resolve, reject) => {
+app.controller("chattergrid", [
+    "$scope",
+    function($scope) {
+        $scope.sounds = [];
+
+        $scope.play = (sound) => {
+            sound.audio.play();
+        };
+
+        $scope.pause = (sound) => {
+            sound.audio.pause();
+        };
+
+        $scope.stop = (sound) => {
+            sound.audio.pause();
+            sound.audio.currentTime = 0;
+        };
+
+        $scope.edit = (sound) => {
+            sound.edit = !sound.edit;
+            sound.nameEdit = sound.name;
+        };
+
+        $scope.changeName = (sound) => {
+            sound.edit = false;
+            sound.name = sound.nameEdit;
+        };
+
+        $scope.delete = (sound) => {
+            // TODO: Check for memory leak if we don't dispose of the Audio properly.
+            delete files[sound.file];
+            $scope.sounds.splice($scope.sounds.indexOf(sound), 1);
+            dirty = true;
+        };
+
+        $scope.loadGrid = async () => {
             if (dirty) {
-                electron.remote.dialog.showMessageBox({
+                const response = await remote.dialog.showMessageBox({
                     type: "question",
                     buttons: ["Yes, discard", "No, cancel"],
                     title: "Load Grid",
                     message: "You have unsaved changes to the current grid.  Discard the changes?",
                     cancelId: 1
-                }, (response) => {
-                    if (response === 0) {
-                        resolve();
-                    } else {
-                        reject();
-                    }
                 });
-            } else {
-                resolve();
+
+                if (response.response === 1) {
+                    return;
+                }
             }
-        }).then(() => {
-            electron.remote.dialog.showOpenDialog({
+
+            const response = await remote.dialog.showOpenDialog({
                 title: "Load Grid",
                 filters: [filterAllCg, filterChgd, filterChgs],
                 properties: ["openFile"]
-            }, (filenames) => {
-                var filename;
-
-                if (!filenames || filenames.length === 0) {
-                    return;
-                }
-
-                filename = filenames[0];
-
-                fs.readFile(filename, (err, data) => {
-                    if (err) {
-                        alert("There was a problem loading the file.");
-                        return;
-                    }
-
-                    new Promise((resolve, reject) => {
-                        JSZip.loadAsync(data).then((zip) => {
-                            // Load the ZIP file.
-                            zip.file("json").async("string").then((data) => {
-                                try {
-                                    var sounds = JSON.parse(data),
-                                        promises;
-                                    
-                                    files = {};
-                                    // TODO: Check for memory leak if we don't dispose of the Audio properly.
-                                    $scope.sounds = [];
-
-                                    promises = sounds.map((sound) => new Promise((resolve, reject) => {
-                                        zip.file(sound.index.toString()).async("nodebuffer").then((data) => {
-                                            checkFile({
-                                                file: sound.file,
-                                                data: data.toString("base64"),
-                                                type: sound.type,
-                                                name: sound.name
-                                            }, true);
-                                            resolve();
-                                        }).catch(reject);
-                                    }));
-                                    
-                                    Promise.all(promises).then(() => {
-                                        dirty = false;
-                                        resolve();
-                                    }).catch(reject);
-                                } catch(err) {
-                                    reject();
-                                }
-                            }).catch(reject);
-                        }).catch(reject);
-                    }).catch(() => {
-                        // Load the JSON file.
-                        try {
-                            var sounds = JSON.parse(data.toString());
-                            
-                            files = {};
-                            // TODO: Check for memory leak if we don't dispose of the Audio properly.
-                            $scope.sounds = [];
-                            
-                            sounds.forEach((sound) => {
-                                checkFile({
-                                    file: sound.file,
-                                    type: sound.type,
-                                    name: sound.name
-                                }, true);
-                            });
-                            dirty = false;
-                        } catch (err) {
-                            alert("There was a problem loading the file.");
-                            return;
-                        }
-                    });
-                });
             });
-        }).catch(() => {});
-    };
 
-    $scope.saveGrid = () => {
-        electron.remote.dialog.showSaveDialog({
-            title: "Save Current Grid",
-            filters: [filterChgd]
-        }, (filename) => {
-            var promises;
-
-            if (!filename) {
+            if (response.canceled) {
                 return;
             }
 
-            promises = $scope.sounds.map((sound) => new Promise((resolve, reject) => {
+            const filenames = response.filePaths;
+
+            if (!filenames || filenames.length === 0) {
+                return;
+            }
+
+            const filename = filenames[0];
+
+            fs.readFile(filename, async (err, data) => {
+                if (err) {
+                    alert("There was a problem loading the file.");
+                    return;
+                }
+
+                try {
+                    const zip = await JSZip.loadAsync(data);
+
+                    // Load the ZIP file.
+                    const unzippedJson = await zip.file("json").async("string");
+
+                    const sounds = JSON.parse(unzippedJson);
+
+                    files = {};
+
+                    // TODO: Check for memory leak if we don't dispose of the Audio properly.
+
+                    $scope.sounds = [];
+
+                    const promises = sounds.map(async (sound) => {
+                        const unzippedData = await zip.file(sound.index.toString()).async("nodebuffer");
+
+                        checkFile({
+                            file: sound.file,
+                            data: unzippedData.toString("base64"),
+                            type: sound.type,
+                            name: sound.name
+                        }, true);
+                    });
+
+                    await Promise.all(promises);
+
+                    dirty = false;
+                } catch {
+                    // Load the JSON file.
+                    try {
+                        const sounds = JSON.parse(data.toString());
+
+                        files = {};
+
+                        // TODO: Check for memory leak if we don't dispose of the Audio properly.
+
+                        $scope.sounds = [];
+
+                        sounds.forEach((sound) => {
+                            checkFile({
+                                file: sound.file,
+                                type: sound.type,
+                                name: sound.name
+                            }, true);
+                        });
+                        dirty = false;
+                    } catch {
+                        alert("There was a problem loading the file.");
+                    }
+                }
+            });
+        };
+
+        $scope.saveGrid = async () => {
+            const response = await remote.dialog.showSaveDialog({
+                title: "Save Current Grid",
+                filters: [filterChgd]
+            });
+
+            if (response.canceled || !response.filePath) {
+                return;
+            }
+
+            const filename = response.filePath;
+
+            const promises = $scope.sounds.map((sound) => new Promise((resolve, reject) => {
                 if (sound.data) {
-                    sound.file = path.join(path.dirname(filename), sound.name + "." + sound.extension);
-                    fs.writeFile(sound.file, new Buffer(sound.data, "base64"), (err) => {
+                    sound.file = path.join(path.dirname(filename), `${sound.name}.${sound.extension}`);
+                    fs.writeFile(sound.file, Buffer.from(sound.data, "base64"), (err) => {
                         if (err) {
                             reject();
                         }
@@ -171,16 +224,14 @@ app.controller("chattergrid", ["$scope", function($scope) {
                 }
             }));
 
-            Promise.all(promises).then(() => {
-                fs.writeFile(filename, JSON.stringify($scope.sounds.map((sound) => {
-                    var audioFilename;
+            try {
+                await Promise.all(promises);
 
-                    return {
-                        file: sound.file,
-                        type: sound.type,
-                        name: sound.name
-                    };
-                })), (err) => {
+                fs.writeFile(filename, JSON.stringify($scope.sounds.map((sound) => ({
+                    file: sound.file,
+                    type: sound.type,
+                    name: sound.name
+                }))), (err) => {
                     if (err) {
                         alert("There was a problem saving the file.");
                         return;
@@ -189,35 +240,37 @@ app.controller("chattergrid", ["$scope", function($scope) {
                     dirty = false;
                     alert("Grid saved!");
                 });
-            }).catch(() => {
+            } catch (err) {
                 alert("There was a problem saving the file.");
-            });
-        });
-    };
+            }
+        };
 
-    $scope.shareGrid = () => {
-        electron.remote.dialog.showSaveDialog({
-            title: "Share Current Grid",
-            filters: [filterChgs]
-        }, (filename) => {
-            var zip, promises;
+        $scope.shareGrid = async () => {
+            const response = await remote.dialog.showSaveDialog({
+                title: "Share Current Grid",
+                filters: [filterChgs]
+            });
+
+            if (response.canceled || !response.filePath) {
+                return;
+            }
+
+            const filename = response.filePath;
 
             if (!filename) {
                 return;
             }
 
-            zip = new JSZip();
+            const zip = new JSZip();
 
-            zip.file("json", JSON.stringify($scope.sounds.map((sound, index) => {
-                return {
-                    file: "/" + (sound.extension ? sound.filename + "." + sound.extension : sound.filename),
-                    type: sound.type,
-                    name: sound.name,
-                    index: index
-                };
-            })));
+            zip.file("json", JSON.stringify($scope.sounds.map((sound, index) => ({
+                file: `/${sound.extension ? `${sound.filename}.${sound.extension}` : sound.filename}`,
+                type: sound.type,
+                name: sound.name,
+                index
+            }))));
 
-            promises = $scope.sounds.map((sound, index) => new Promise((resolve, reject) => {
+            const promises = $scope.sounds.map((sound, index) => new Promise((resolve, reject) => {
                 if (sound.data) {
                     zip.file(index.toString(), new Buffer(sound.data, "base64"), {binary: true});
 
@@ -236,29 +289,29 @@ app.controller("chattergrid", ["$scope", function($scope) {
                 }
             }));
 
-            Promise.all(promises).then(() => {
-                zip.generateAsync({
+            try {
+                await Promise.all(promises);
+
+                const content = await zip.generateAsync({
                     compression: "DEFLATE",
                     type: "nodebuffer"
-                }).then((content) => {
-                    fs.writeFile(filename, content, (err) => {
-                        if (err) {
-                            alert("There was a problem saving the file.");
-                            return;
-                        }
-
-                        dirty = false;
-                        alert("Grid saved!");
-                    });
-                }).catch((err) => {
-                    alert("There was a problem saving the file.");
                 });
-            }).catch((err) => {
+
+                fs.writeFile(filename, content, (err) => {
+                    if (err) {
+                        alert("There was a problem saving the file.");
+                        return;
+                    }
+
+                    dirty = false;
+                    alert("Grid saved!");
+                });
+            } catch (err) {
                 alert("There was a problem saving the file.");
-            });
-        });
-    };
-}]);
+            }
+        };
+    }
+]);
 
 $(document).ready(() => {
     $(window).on("dragenter dragleave dragover dragdrop", (ev) => {
@@ -267,11 +320,9 @@ $(document).ready(() => {
     });
 
     $(window).on("drop", (ev) => {
-        var files;
-
         ev.preventDefault();
 
-        [].concat.apply([], ev.originalEvent.dataTransfer.files).forEach((file) => {
+        Array.from(ev.originalEvent.dataTransfer.files).forEach((file) => {
             checkFile({file: file.path, type: file.type});
         });
 
@@ -280,49 +331,3 @@ $(document).ready(() => {
 
     scope = angular.element("html").scope();
 });
-
-checkFile = (opts, fromLoad) => {
-    var file, type, data, audio;
-
-    file = opts.file;
-    type = opts.type;
-    data = opts.data;
-
-    if (files[file]) {
-        alert("You've already added " + file + ".");
-        return;
-    }
-
-    audio = new Audio(data ? "data:" + type + ";base64," + data : file);
-
-    audio.onerror = (err) => {
-        alert(file + " is not of a supported format.");
-        err.cancelBubble = true;
-        audio = null;
-    };
-
-    audio.onloadeddata = () => {
-        var parsed = filenameRegex.exec(file);
-
-        files[file] = type;
-        scope.sounds.push({
-            file: file,
-            data: data,
-            filename: parsed[1],
-            name: opts.name || parsed[1],
-            extension: parsed[2],
-            type: type,
-            audio: audio
-        });
-
-        audio.addEventListener("pause", () => {
-            scope.$apply();
-        });
-
-        if (!fromLoad) {
-            dirty = true;
-        }
-
-        scope.$apply();
-    };
-};
