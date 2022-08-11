@@ -12,7 +12,7 @@
         "bootstrap": "4.2.1",
         "jquery": "3.5.1",
         "jszip": "3.10.1",
-        "mmmagic": "0.5.2"
+        "mmmagic": "0.5.3"
     },
     "version": "1.0.1",
     "description": "An application to easily create and share custom soundboards.",
