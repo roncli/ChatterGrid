@@ -16,15 +16,15 @@
     "dependencies": {
         "@electron/remote": "2.0.8",
         "@fortawesome/fontawesome-free": "6.1.2",
-        "angular": "1.8.1",
+        "angular": "1.8.3",
         "bootstrap": "5.2.0",
         "jquery": "3.6.0",
         "jszip": "3.10.1",
         "mmmagic": "0.5.3"
     },
     "devDependencies": {
-        "@babel/core": "7.18.0",
-        "@babel/eslint-parser": "7.17.0",
+        "@babel/core": "7.18.10",
+        "@babel/eslint-parser": "7.18.9",
         "@types/angular": "1.8.4",
         "@types/jquery": "3.5.14"
     },
