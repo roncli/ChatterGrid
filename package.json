@@ -6,7 +6,7 @@
         "email": "roncli@roncli.com",
         "url": "http://www.roncli.com"
     },
-    "version": "1.0.1",
+    "version": "1.0.2",
     "build": {
         "appId": "com.electron.chattergrid",
         "copyright": "©2016-2022 roncli Productions",
@@ -27,8 +27,8 @@
         }
     },
     "scripts": {
-        "pack": "node_modules/.bin/build --dir",
-        "dist": "node_modules/.bin/build"
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
     },
     "devDependencies": {
         "electron": "20.0.2",

@@ -27,7 +27,7 @@ const createWindow = async () => {
     main.enable(win.webContents);
     win.setMenu(null);
     win.maximize();
-    win.webContents.toggleDevTools(); // Uncomment to debug.
+    // win.webContents.toggleDevTools(); // Uncomment to debug.
 
     win.once("ready-to-show", () => {
         win.show();

@@ -1,6 +1,6 @@
 {
     "name": "ChatterGrid",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "An application to easily create and share custom soundboards.",
     "repository": {
         "type": "git",
@@ -27,5 +27,8 @@
         "@babel/eslint-parser": "7.17.0",
         "@types/angular": "1.8.4",
         "@types/jquery": "3.5.14"
+    },
+    "overrides": {
+        "nan": "github:jkleinsc/nan#remove_accessor_signature"
     }
 }
