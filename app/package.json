@@ -26,7 +26,7 @@
         "@babel/core": "7.20.7",
         "@babel/eslint-parser": "7.19.1",
         "@types/angular": "1.8.4",
-        "@types/jquery": "3.5.14"
+        "@types/jquery": "3.5.16"
     },
     "overrides": {
         "nan": "github:jkleinsc/nan#remove_accessor_signature"
