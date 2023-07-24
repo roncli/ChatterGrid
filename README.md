@@ -2,7 +2,7 @@
 An [Electron](http://electron.atom.io) application to easily create and share custom soundboards.
 
 ## Installing
-To install ChatterGrid on Windows or Mac, see the [Releases](https://github.com/roncli/ChatterGrid/releases) page for platform-specific installers.  For all other systems, you should run ChatterGrid from source.
+To install ChatterGrid on Windows, see the [Releases](https://github.com/roncli/ChatterGrid/releases) page for platform-specific installers.  For all other systems, you should run ChatterGrid from source.
 
 ## Running from Source
 To run:
