@@ -23,7 +23,7 @@
         "mmmagic": "0.5.3"
     },
     "devDependencies": {
-        "@babel/core": "7.22.11",
+        "@babel/core": "7.22.15",
         "@babel/eslint-parser": "7.22.11",
         "@types/angular": "1.8.5",
         "@types/jquery": "3.5.18"
