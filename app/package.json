@@ -25,7 +25,7 @@
     "devDependencies": {
         "@babel/core": "7.23.0",
         "@babel/eslint-parser": "7.22.15",
-        "@types/angular": "1.8.5",
+        "@types/angular": "1.8.6",
         "@types/jquery": "3.5.19"
     },
     "overrides": {
