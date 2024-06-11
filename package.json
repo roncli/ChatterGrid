@@ -31,7 +31,7 @@
         "dist": "electron-builder"
     },
     "devDependencies": {
-        "electron": "30.1.0",
+        "electron": "31.0.0",
         "electron-builder": "24.13.3"
     },
     "repository": {
