@@ -32,7 +32,7 @@
     },
     "devDependencies": {
         "electron": "42.4.0",
-        "electron-builder": "26.15.2"
+        "electron-builder": "26.15.3"
     },
     "repository": {
         "type": "git",
