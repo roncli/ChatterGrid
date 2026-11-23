@@ -18,7 +18,7 @@
         "@fortawesome/fontawesome-free": "6.5.2",
         "angular": "1.8.3",
         "bootstrap": "5.3.9",
-        "jquery": "3.7.1",
+        "jquery": "4.1.0",
         "jszip": "3.10.2",
         "mmmagic": "0.5.3"
     },
@@ -26,7 +26,7 @@
         "@babel/core": "8.1.2",
         "@babel/eslint-parser": "8.1.2",
         "@types/angular": "1.8.9",
-        "@types/jquery": "3.5.33"
+        "@types/jquery": "4.0.1"
     },
     "overrides": {
         "nan": "github:jkleinsc/nan#remove_accessor_signature"
